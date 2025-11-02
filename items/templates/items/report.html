@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Items Report</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Items Dashboard</h1>
+  <p>Total items: <span id="total_items">...</span></p>
+  <p>Total quantity: <span id="total_qty">...</span></p>
+  <p>Total value: <span id="total_value">...</span></p>
+
+  <canvas id="topItemsChart" width="600" height="300"></canvas>
+
+  <script>
+  async function loadReport() {
+    const r = await fetch('/api/reports/items/');
+    const d = await r.json();
+    document.getElementById('total_items').innerText = d.total_items;
+    document.getElementById('total_qty').innerText = d.total_qty;
+    document.getElementById('total_value').innerText = d.total_value;
+
+    const labels = d.top_items.map(i => i.name);
+    const values = d.top_items.map(i => i.qty);
+
+    const ctx = document.getElementById('topItemsChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Quantity',
+          data: values,
+        }]
+      },
+      options: {}
+    });
+  }
+  loadReport();
+  </script>
+</body>
+</html>
